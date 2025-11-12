@@ -154,8 +154,6 @@ struct cache_set_t
   struct cache_blk_t *blks;	/* cache blocks, allocated sequentially, so
 				   this pointer can also be used for random
 				   access to cache blocks */
-  /* --- new field --- */
-  unsigned int rr_pointer; /* next way index for round-robin */
 
 
 
@@ -186,15 +184,7 @@ struct cache_t
   enum cache_policy policy;	/* cache replacement policy */
   unsigned int hit_latency;	/* cache hit latency */
 
-  /* adaptive hyperparameters */
-  double alpha;   /* learning rate for EMA (0 < α ≤ 1) */
-  double k;       /* noise scaling factor (0 ≤ k ≤ 1) */
-
-  /* moving averages for adaptive decision */
-  double avg_seq;
-  double avg_reuse;
-  double avg_rand;
-
+  
 
   /* miss/replacement handler, read/write BSIZE bytes starting at BADDR
      from/into cache block BLK, returns the latency of the operation
@@ -245,22 +235,7 @@ struct cache_t
   /* data blocks */
   byte_t *data;			/* pointer to data blocks allocation */
 
-  /* === Adaptive telemetry & sampling additions === */
-unsigned long policy_count[8];    /* per-policy usage counter */
-unsigned long policy_misses[8];   /* per-policy miss counter */
-
-/* Adaptive hysteresis and forced windows */
-int forced_policy;                /* -1 if none, else current forced policy */
-unsigned long forced_until;       /* access count until which forced policy holds */
-int candidate_policy;             /* -1 if none, else candidate being tested */
-int candidate_count;              /* how many consecutive confirmations */
-
-/* Sampling / trial mechanism for MRU & LFU */
-int trial_policy;                 /* -1 if none, else MRU/LFU under trial */
-unsigned long trial_until;        /* end of trial window */
-unsigned long trial_accesses;     /* trial sample accesses */
-unsigned long trial_misses;       /* trial sample misses */
-unsigned int trial_sample_stride; /* every Nth set used for sampling */
+ 
 
   /* NOTE: this is a variable-size tail array, this must be the LAST field
      defined in this structure! */
